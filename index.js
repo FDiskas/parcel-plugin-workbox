@@ -16,31 +16,27 @@ module.exports = bundle => {
       globDirectory: bundle.options.outDir,
       // file types to include
       globPatterns: [
-        '**\/*.{css,html,js,gif,ico,jpg,png,svg,webp,woff,woff2,ttf,otf}'
+        '**/*.{css,html,js,gif,ico,jpg,png,svg,webp,woff,woff2,ttf,otf}'
       ]
     }
 
-    let pkg,
-      mainAsset =
+    let pkg
+    let mainAsset =
       bundle.mainAsset ||
       bundle.mainBundle.entryAsset ||
       bundle.mainBundle.childBundles.values().next().value.entryAsset
 
-    pkg = typeof mainAsset.getPackage === 'function' ?
-      await mainAsset.getPackage() : mainAsset.package
+    pkg = typeof mainAsset.getPackage === 'function'
+      ? await mainAsset.getPackage() : mainAsset.package
 
     let config = Object.assign({}, DEFAULT_CONFIG)
     if (pkg.workbox) {
-      if (pkg.workbox.importScripts && Array.isArray(pkg.workbox.importScripts))
-        config.importScripts = pkg.workbox.importScripts
-      if (pkg.workbox.importScripts && !Array.isArray(pkg.workbox.importScripts))
-        config.importScripts = [pkg.workbox.importScripts]
+      if (pkg.workbox.importScripts && Array.isArray(pkg.workbox.importScripts)) { config.importScripts = pkg.workbox.importScripts }
+      if (pkg.workbox.importScripts && !Array.isArray(pkg.workbox.importScripts)) { config.importScripts = [pkg.workbox.importScripts] }
       if (pkg.workbox.globDirectory) config.globDirectory = pkg.workbox.globDirectory
       config.globDirectory = path.resolve(config.globDirectory)
-      if (pkg.workbox.globPatterns && Array.isArray(pkg.workbox.globParrents))
-        config.globPatterns = pkg.workbox.globPatterns
-      if (pkg.workbox.globPatterns && !Array.isArray(pkg.workbox.globParrents))
-        config.globPatterns = [pkg.workbox.globPatterns]
+      if (pkg.workbox.globPatterns && Array.isArray(pkg.workbox.globParrents)) { config.globPatterns = pkg.workbox.globPatterns }
+      if (pkg.workbox.globPatterns && !Array.isArray(pkg.workbox.globParrents)) { config.globPatterns = [pkg.workbox.globPatterns] }
       if (pkg.workbox.pathOut) pathOut = pkg.workbox.pathOut
     }
     const dest = path.resolve(pathOut)
@@ -59,7 +55,7 @@ module.exports = bundle => {
     })
 
     config.importScripts = config.importScripts.map(s => {
-      return /[^\/]+$/.exec(s)[0]
+      return /[^/]+$/.exec(s)[0]
     })
     config.importScripts.push('https://storage.googleapis.com/workbox-cdn/releases/4.1.1/workbox-sw.js')
 
@@ -80,7 +76,7 @@ module.exports = bundle => {
     readFile(entry, 'utf8', (err, data) => {
       if (err) logger.error(err)
       if (!data.includes('serviceWorker.register')) {
-        let swTag =`
+        let swTag = `
         if ('serviceWorker' in navigator) {
           window.addEventListener('load', function() {
             navigator.serviceWorker.register('/sw.js');
